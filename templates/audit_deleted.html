@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Eliminaciones{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-11">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="m-0">Auditoría de usuarios eliminados</h3>
+      <form class="d-flex gap-2" method="get" action="{{ url_for('audit_deleted') }}">
+        <input class="form-control" name="q" value="{{ q or '' }}" placeholder="Buscar por usuario/actor/email/rol/IP/UA">
+        <div class="btn-group">
+          <button class="btn btn-outline-primary" type="submit">Buscar</button>
+          <a class="btn btn-outline-danger" href="{{ url_for('audit_deleted') }}">Limpiar</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped align-middle m-0">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Usuario eliminado</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Actor</th>
+                <th>IP</th>
+                <th>Agente</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in rows %}
+              <tr>
+                <td>{{ r.id }}</td>
+                <td>{{ r.username }}</td>
+                <td>{{ r.email }}</td>
+                <td><span class="badge text-bg-secondary">{{ r.role }}</span></td>
+                <td>{{ r.actor and r.actor.username or '—' }}</td>
+                <td>{{ r.ip or '-' }}</td>
+                <td><span class="small text-muted">{{ r.user_agent }}</span></td>
+                <td><small>{{ r.deleted_at }}</small></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="8" class="text-center py-4 text-muted">Sin registros.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div class="text-muted small">Total: {{ total }}</div>
+      <div class="btn-group">
+        {% if page > 1 %}
+          <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('audit_deleted', page=page-1, size=size, q=q) }}">« Anterior</a>
+        {% endif %}
+        {% if page*size < total %}
+          <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('audit_deleted', page=page+1, size=size, q=q) }}">Siguiente »</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

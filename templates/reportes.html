@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Reportes{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10 col-lg-8">
+    <div class="card shadow">
+      <div class="card-body">
+        <h3 class="mb-3">Reportes</h3>
+        <p>Solo visible para usuarios verificados.</p>
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between">
+            Reporte 1 <span class="badge text-bg-secondary">PDF</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            Reporte 2 <span class="badge text-bg-secondary">CSV</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            Reporte 3 <span class="badge text-bg-secondary">XLSX</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+# Entorno virtual
+.venv/
+# Variables de entorno
+.env
+# Cachés Python
+__pycache__/
+*.pyc 
+# *.pyc es para todos los archivos compilados de Python, es decir, los archivos que terminan en .pyc son diferentes a los .py
+# un ejemplo de archivo .pyc contiene bytecode que es una representación intermedia del código Python que la máquina virtual de Python puede ejecutar.

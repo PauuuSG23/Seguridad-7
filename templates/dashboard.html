@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10 col-lg-8">
+    <div class="card shadow">
+      <div class="card-body">
+        <h3 class="mb-3">Dashboard</h3>
+        <p>Bienvenido, <strong>{{ data.nombre }}</strong>. Este contenido está protegido por verificación.</p>
+        <ul>
+          <li>Correo registrado: {{ data.correo }}</li>
+          <li>Accesos rápidos…</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

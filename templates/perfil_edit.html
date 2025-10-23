@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Editar mi perfil{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow">
+      <div class="card-body">
+        <h3 class="mb-3">Editar mi perfil</h3>
+
+        <form method="POST" novalidate>
+          {{ form.hidden_tag() }}
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.username.id }}">{{ form.username.label }}</label>
+            {{ form.username(class="form-control") }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.email.id }}">{{ form.email.label }}</label>
+            {{ form.email(class="form-control") }}
+            <div class="form-text">Si cambias tu correo, deberás confirmar tu contraseña actual.</div>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.current_password.id }}">{{ form.current_password.label }}</label>
+            {{ form.current_password(class="form-control") }}
+            <div class="form-text">Obligatoria solo si cambias correo o contraseña.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.new_password.id }}">{{ form.new_password.label }}</label>
+            {{ form.new_password(class="form-control") }}
+            <div class="form-text">Déjalo vacío si no deseas cambiarla (mínimo 6 caracteres).</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.confirm_new_password.id }}">{{ form.confirm_new_password.label }}</label>
+            {{ form.confirm_new_password(class="form-control") }}
+          </div>
+
+          <div class="d-flex gap-2">
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ url_for('perfil') }}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
