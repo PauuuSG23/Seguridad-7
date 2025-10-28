@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block head_extra %}
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow">
+      <div class="card-body">
+        <h3 class="card-title text-center mb-4">Iniciar sesión</h3>
+
+        {# Banner de bloqueo si lock_remaining > 0 #}
+        {% if lock_remaining and lock_remaining > 0 %}
+          <div class="alert alert-danger d-flex justify-content-between align-items-center" role="alert" id="lockAlert">
+            <div>
+              <strong>Usuario bloqueado:</strong> por intentos fallidos. Vuelve a intentarlo en
+              <span id="lockCountdown">{{ lock_remaining }}</span> s.
+            </div>
+            <span class="badge text-bg-danger">Bloqueado</span>
+          </div>
+        {% endif %}
+
+        <form method="POST" novalidate id="loginForm">
+          {{ form.hidden_tag() }}
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.username.id }}">{{ form.username.label }}</label>
+            {{ form.username(
+                class="form-control",
+                id=form.username.id,
+                placeholder="Tu usuario"
+            ) }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.password.id }}">{{ form.password.label }}</label>
+            {{ form.password(
+                class="form-control",
+                id=form.password.id,
+                placeholder="Tu contraseña"
+            ) }}
+          </div>
+
+          <div class="mb-3 d-flex justify-content-center">
+            {{ form.recaptcha() }}
+          </div>
+
+          <div class="d-grid">
+            {% if lock_remaining and lock_remaining > 0 %}
+              <button class="btn btn-secondary" type="button" id="lockedBtn" disabled>
+                Bloqueado (<span id="btnCountdown">{{ lock_remaining }}</span> s)
+              </button>
+            {% else %}
+              {{ form.submit(class="btn btn-primary") }}
+            {% endif %}
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block body_extra %}
+<script>
+(function () {
+  // Segundos restantes enviados por el backend (0 si no hay bloqueo)
+  var remaining = {{ (lock_remaining or 0) | int }};
+
+  var username  = document.getElementById("{{ form.username.id }}");
+  var password  = document.getElementById("{{ form.password.id }}");
+  var form      = document.getElementById("loginForm");
+  var lockAlert = document.getElementById("lockAlert");
+  var lockSpan  = document.getElementById("lockCountdown");
+  var btnSpan   = document.getElementById("btnCountdown");
+
+  // Si NO hay bloqueo, poner el foco en usuario y salir
+  if (!remaining || remaining <= 0) {
+    if (username) { try { username.focus(); } catch(e) {} }
+    return;
+  }
+
+  // Hay bloqueo: deshabilitar inputs y bloquear envío mientras dura
+  if (username) username.setAttribute("disabled", "disabled");
+  if (password) password.setAttribute("disabled", "disabled");
+
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      if (remaining > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+  }
+
+  // Cuenta regresiva
+  var interval = setInterval(function () {
+    remaining -= 1;
+    if (lockSpan) lockSpan.textContent = remaining;
+    if (btnSpan)  btnSpan.textContent  = remaining;
+
+    if (remaining <= 0) {
+      clearInterval(interval);
+
+      // Habilitar inputs
+      if (username) username.removeAttribute("disabled");
+      if (password) password.removeAttribute("disabled");
+
+      // Mensaje de fin de bloqueo
+      if (lockAlert) {
+        lockAlert.classList.replace("alert-danger", "alert-warning");
+        lockAlert.innerHTML = 'El bloqueo ha finalizado. Ya puedes intentar de nuevo.';
+      }
+
+      // Reemplazar botón bloqueado por el submit real
+      var lockedBtn = document.getElementById("lockedBtn");
+      if (lockedBtn && lockedBtn.parentNode) {
+        var submit = document.createElement("button");
+        submit.className = "btn btn-primary";
+        submit.type = "submit";
+        submit.textContent = "Ingresar";
+        lockedBtn.parentNode.replaceChild(submit, lockedBtn);
+      }
+
+      // Resetear reCAPTCHA por si ya se había resuelto durante el bloqueo
+      if (window.grecaptcha && typeof grecaptcha.reset === "function") {
+        try { grecaptcha.reset(); } catch (e) {}
+      }
+
+      // Enfocar usuario para intentar de nuevo
+      if (username) { try { username.focus(); } catch(e) {} }
+    }
+  }, 1000);
+})();
+</script>
+{% endblock %}
